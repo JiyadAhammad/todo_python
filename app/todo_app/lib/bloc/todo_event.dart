@@ -1,4 +1,4 @@
-part of 'todo_bloc_bloc.dart';
+part of 'todo_bloc.dart';
 
 @immutable
 abstract class TodoBlocEvent {}
