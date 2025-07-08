@@ -111,5 +111,53 @@ def modify_todo(body: TodoModel):
                     "message": "Description is required.",
                 },
             )
+        else:
+
+            for i, item in enumerate(all_todo):
+                if item.id == body.id:
+                    all_todo[i] = body
+                    return {
+                        "status": True,
+                        "message": "Todo Updated Sucesfullty",
+                        "data": {
+                            "id": body.id,
+                            "title": body.title,
+                            "descrption": body.descrption,
+                        },
+                    }
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "status": False,
+                    "message": "No result Found",
+                },
+            )
+
     except:
-        print("An exception occurred")
+        print("An exception occurred ")
+
+
+@app.delete("/delete_todo/{id}")
+def delete_todo(id: str):
+    if not id:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "status": False,
+                "message": "Please Provide Todo id",
+            },
+        )
+    for i, item in enumerate(all_todo):
+        if item.id == id:
+            all_todo[i].is_active = False
+            return {
+                "status": True,
+                "message": "Todo item Deleted Sucesfullty",
+            }
+    return JSONResponse(
+        status_code=400,
+        content={
+            "status": False,
+            "message": "No result Found",
+        },
+    )

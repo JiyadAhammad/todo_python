@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_app/bloc/todo_bloc.dart';
 import 'package:todo_app/main.dart';
 import 'package:todo_app/model/todo_model.dart';
 
 class AddEditPage extends StatefulWidget {
-  const AddEditPage({super.key, required this.action, this.todoId});
+  const AddEditPage({super.key, required this.action, this.todo});
   final TodoAction action;
-  final TodoModel? todoId;
+  final TodoModel? todo;
 
   @override
   State<AddEditPage> createState() => _AddEditPageState();
@@ -19,8 +21,8 @@ class _AddEditPageState extends State<AddEditPage> {
   void initState() {
     super.initState();
     if (widget.action == TodoAction.edit) {
-      _headController = TextEditingController(text: widget.todoId!.heading);
-      _desController = TextEditingController(text: widget.todoId!.description);
+      _headController = TextEditingController(text: widget.todo!.title);
+      _desController = TextEditingController(text: widget.todo!.description);
     } else {
       _headController = TextEditingController();
       _desController = TextEditingController();
@@ -48,6 +50,7 @@ class _AddEditPageState extends State<AddEditPage> {
           spacing: 25,
           children: [
             TextFormField(
+              controller: _headController,
               decoration: InputDecoration(
                 hintText: 'Enter the Todo heading',
                 filled: true,
@@ -71,6 +74,7 @@ class _AddEditPageState extends State<AddEditPage> {
             ),
 
             TextFormField(
+              controller: _desController,
               maxLines: 5,
               decoration: InputDecoration(
                 hintText: 'Enter the description',
@@ -102,10 +106,24 @@ class _AddEditPageState extends State<AddEditPage> {
           onPressed: () {
             if (widget.action == TodoAction.add) {
               // Create new todo logic
+              final todo = TodoModel.create(
+                title: _headController.text.trim(),
+                description: _desController.text.trim(),
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+              );
+
+              context.read<TodoBloc>().add(CreateTodo(todo: todo));
             } else {
               // update Existing todo
               // todo id needed to edit
+              final todo = TodoModel.create(
+                title: _headController.text.trim(),
+                description: _desController.text.trim(),
+                id: widget.todo!.id,
+              );
+              context.read<TodoBloc>().add(UpdateTodo(todo: todo));
             }
+            Navigator.pop(context);
           },
           child: Text(widget.action == TodoAction.add ? 'Create' : "Update"),
         ),
