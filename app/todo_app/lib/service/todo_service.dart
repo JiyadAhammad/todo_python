@@ -5,7 +5,6 @@ import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
 
 import '../config.dart';
-import '../model/failure.dart';
 import '../model/todo_model.dart';
 
 class TodoService {
